@@ -1,0 +1,25 @@
+- name: "install postgresql"
+  pacman:
+      state: latest
+      name: postgresql
+- name: "generate postgresql locale"
+  locale_gen:
+    name: "{{ postgresql_locale }}"
+    state: present
+- name: "check if postgresql is initialized"
+  stat:
+    path: "{{ postgresql_datadir }}/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: "init postgresql cluster"
+  command: "initdb --locale {{ postgresql_locale }} -E {{ postgresql_encoding }} -D {{ postgresql_datadir }}"
+  become: yes
+  become_user: postgres
+  when: not pgdata_dir_version.stat.exists
+
+- name: "ensure postgresql is started and enabled on boot"
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+

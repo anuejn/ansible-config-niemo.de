@@ -1,0 +1,41 @@
+- name: "add aur_builder user for aur packages"
+  user:
+    name: aur_builder
+    group: wheel
+- name: "allow aur_builder to use pacman without password"
+  lineinfile:
+    path: /etc/sudoers.d/11-install-aur_builder
+    line: 'aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman'
+    create: yes
+    validate: 'visudo -cf %s'
+- name: "install yay"
+  aur: name=yay use=makepkg skip_installed=true
+  become: yes
+  become_user: aur_builder
+- name: "upgrade aur packages"
+  aur: 
+    use: yay
+    upgrade: yes
+  become: yes
+  become_user: aur_builder
+- name: "upgrade pacman packages"
+  pacman:
+      update_cache: yes
+      upgrade: yes
+- name: "install basic packages" 
+  pacman:
+      state: latest
+      name:
+      - which
+      - mlocate
+      - tmux
+      - screen
+      - neovim
+      - vim
+      - vi
+- name: "remove useless packages" 
+  pacman:
+      state: absent
+      recurse: yes
+      name:
+      - nano

@@ -1,0 +1,17 @@
+# TODO(robin): handle locale (handled for postgres but not for users atm 
+
+
+---
+- hosts: niemo.de
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars_files:
+  - vars/public.yml
+#  - vars/private.yml
+
+#  - name: "install basic system"
+  pre_tasks:
+  - include: "system.yml"
+  - include: "postgresql.yml"
+

@@ -1,0 +1,3 @@
+postgresql_locale: 'en_US.UTF-8'
+postgresql_encoding: 'UTF-8'
+postgresql_datadir: '/var/lib/postgres/data'
